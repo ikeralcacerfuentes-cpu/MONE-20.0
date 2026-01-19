@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MONE · Entrar</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1f7a3a">
+  <link rel="icon" href="logo.png">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="busyBar" class="busy" style="display:none;">
+    <div class="spinner"></div>
+    <div id="busyText">Cargando…</div>
+  </div>
+  <div id="toast" class="toast" style="display:none;">—</div>
+
+  <div class="shell">
+    <div class="header">
+      <div class="brand">
+        <img src="logo.png" alt="MONE">
+        <div>
+          <div class="title">MONE</div>
+          <div class="sub">Mobilitat que acompanya · València centre</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h1 class="h1">Entrar</h1>
+      <p class="p muted">Escribe tu nombre y elige tu perfil.</p>
+
+      <label class="label">Tu nombre</label>
+      <input id="name" class="input" placeholder="Ej. Iker" autocomplete="name"/>
+
+      <label class="label">Soy…</label>
+      <div class="tilegrid">
+        <button class="tile selected" type="button" data-role="acompañado" onclick="pickRole('acompañado')">
+          <div class="ico">🧑‍🦳</div><div class="txt">Acompañado</div>
+        </button>
+        <button class="tile" type="button" data-role="acompañante" onclick="pickRole('acompañante')">
+          <div class="ico">🤝</div><div class="txt">Acompañante</div>
+        </button>
+      </div>
+
+      <select id="role" class="input" style="display:none;">
+        <option value="acompañado" selected>acompañado</option>
+        <option value="acompañante">acompañante</option>
+        <option value="admin">admin</option>
+      </select>
+
+      <div class="actions">
+        <button class="btn primary" onclick="moneLogin()">Entrar</button>
+        <a class="btn ghost" href="register.html" style="text-decoration:none;display:inline-flex;align-items:center;">Crear cuenta</a>
+      </div>
+
+      <p class="muted small" style="margin-top:12px;">
+        Consejo: si eres mayor, pide a un familiar que te cree la cuenta la primera vez. Luego entrar es solo tu nombre.
+      </p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    function pickRole(r){
+      document.getElementById("role").value = r;
+      document.querySelectorAll(".tile").forEach(t=>{
+        t.classList.toggle("selected", t.getAttribute("data-role")===r);
+      });
+    }
+  </script>
+</body>
+</html>

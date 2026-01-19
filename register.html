@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MONE · Crear cuenta</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1f7a3a">
+  <link rel="icon" href="logo.png">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="busyBar" class="busy" style="display:none;">
+    <div class="spinner"></div>
+    <div id="busyText">Cargando…</div>
+  </div>
+
+  <div class="shell">
+    <div class="header">
+      <div class="brand">
+        <img src="logo.png" alt="MONE">
+        <div>
+          <div class="title">MONE</div>
+          <div class="sub">Crear cuenta</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a class="btn link" href="index.html" style="text-decoration:none;">Ya tengo cuenta</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h1 class="h1">Crear cuenta</h1>
+      <p class="p muted">Solo necesitas esto. Luego entrar será muy fácil.</p>
+
+      <label class="label">Tu nombre</label>
+      <input id="regName" class="input" placeholder="Ej. Carmen" autocomplete="name"/>
+
+      <label class="label">Elige tu perfil</label>
+      <div class="tilegrid">
+        <button class="tile selected" type="button" data-role="acompañado" onclick="pickRole('acompañado')">
+          <div class="ico">🧑‍🦳</div><div class="txt">Acompañado</div>
+        </button>
+        <button class="tile" type="button" data-role="acompañante" onclick="pickRole('acompañante')">
+          <div class="ico">🤝</div><div class="txt">Acompañante</div>
+        </button>
+      </div>
+
+      <select id="regRole" class="input" style="display:none;">
+        <option value="acompañado" selected>acompañado</option>
+        <option value="acompañante">acompañante</option>
+        <option value="admin">admin</option>
+      </select>
+
+      <label class="label">Barrio</label>
+      <select id="regZone" class="input">
+        <option value="Ciutat Vella">Ciutat Vella</option>
+        <option value="Eixample">Eixample</option>
+        <option value="Extramurs">Extramurs</option>
+        <option value="La Saïdia">La Saïdia</option>
+        <option value="El Pla del Real">El Pla del Real</option>
+        <option value="Camins al Grau">Camins al Grau</option>
+        <option value="Benimaclet">Benimaclet</option>
+      </select>
+
+      <!-- Admin access (hidden by default) -->
+      <div style="margin-top:12px;">
+        <button class="btn link" type="button" onclick="toggleAdmin()">Acceso admin</button>
+        <div id="adminBox" style="display:none;margin-top:10px;">
+          <p class="muted small" style="margin:0 0 8px;">Solo para el moderador. Requiere contraseña.</p>
+          <label class="label">Contraseña admin</label>
+          <input id="adminPass" class="input" type="password" placeholder="0801" />
+          <div class="actions">
+            <button class="btn ghost" type="button" onclick="pickRole('admin')">Seleccionar Admin</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" onclick="moneRegister()">Crear cuenta</button>
+        <a class="btn ghost" href="index.html" style="text-decoration:none;display:inline-flex;align-items:center;">Volver</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    function pickRole(r){
+      document.getElementById("regRole").value = r;
+      document.querySelectorAll(".tile").forEach(t=>{
+        t.classList.toggle("selected", t.getAttribute("data-role")===r);
+      });
+      // si es admin, quitamos selección visual de tiles normales
+      if(r==="admin"){
+        document.querySelectorAll(".tile").forEach(t=>t.classList.remove("selected"));
+      }
+    }
+    function toggleAdmin(){
+      const box = document.getElementById("adminBox");
+      box.style.display = (box.style.display==="none" || !box.style.display) ? "block" : "none";
+    }
+  </script>
+</body>
+</html>

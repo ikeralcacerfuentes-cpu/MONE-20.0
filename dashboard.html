@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MONE · Panel</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1f7a3a">
+  <link rel="icon" href="logo.png">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="busyBar" class="busy" style="display:none;">
+    <div class="spinner"></div>
+    <div id="busyText">Cargando…</div>
+  </div>
+  <div id="toast" class="toast" style="display:none;">—</div>
+
+  <div class="shell">
+    <div class="header">
+      <div class="brand">
+        <img src="logo.png" alt="MONE">
+        <div>
+          <div class="title">MONE</div>
+          <div class="sub" id="whoami">—</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn ghost" onclick="moneOpenOnboarding()">Cómo funciona</button>
+        <button class="btn danger" onclick="moneLogout()">Salir</button>
+      </div>
+    </div>
+
+    <div class="stack">
+      <!-- ACOMPAÑADO -->
+      <section class="card" id="view-acompañado" style="display:none;">
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start;">
+          <div>
+            <h2 class="h2">Pedir acompañamiento</h2>
+            <div class="muted small" id="wizProgress">Paso 1 de 3</div>
+          </div>
+        </div>
+
+        <!-- Step 1 -->
+        <div id="wizStep1" style="margin-top:12px;">
+          <div class="muted">¿Para qué necesitas ayuda?</div>
+          <div class="tilegrid">
+            <button class="tile" type="button" data-wiztype="Cita médica" onclick="wizPickType('Cita médica')">
+              <div class="ico">🏥</div><div class="txt">Cita médica</div>
+            </button>
+            <button class="tile" type="button" data-wiztype="Gestión administrativa" onclick="wizPickType('Gestión administrativa')">
+              <div class="ico">🧾</div><div class="txt">Gestión</div>
+            </button>
+            <button class="tile" type="button" data-wiztype="Compra / recados" onclick="wizPickType('Compra / recados')">
+              <div class="ico">🛒</div><div class="txt">Compra</div>
+            </button>
+            <button class="tile" type="button" data-wiztype="Paseo / movilidad activa" onclick="wizPickType('Paseo / movilidad activa')">
+              <div class="ico">🚶</div><div class="txt">Paseo</div>
+            </button>
+            <button class="tile" type="button" data-wiztype="Acompañamiento social" onclick="wizPickType('Acompañamiento social')">
+              <div class="ico">💬</div><div class="txt">Social</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div id="wizStep2" style="display:none;margin-top:12px;">
+          <div class="muted">Elige el día</div>
+          <input id="wizDate" class="input" type="date" />
+          <div class="actions">
+            <button class="btn ghost" onclick="wizBack()">Atrás</button>
+            <button class="btn primary" onclick="wizNextFromDate()">Siguiente</button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div id="wizStep3" style="display:none;margin-top:12px;">
+          <div class="muted">Elige la hora</div>
+          <input id="wizTime" class="input" type="time" />
+          <label class="label">Nota (opcional)</label>
+          <input id="wizNotes" class="input" placeholder="Ej. silla de ruedas, lugar exacto…" />
+          <div class="actions">
+            <button class="btn ghost" onclick="wizBack()">Atrás</button>
+            <button class="btn primary" onclick="wizNextFromTime()">Siguiente</button>
+          </div>
+        </div>
+
+        <!-- Confirm -->
+        <div id="wizStep4" style="display:none;margin-top:12px;">
+          <div class="muted">Revisa y confirma</div>
+          <div class="card" style="box-shadow:none;border-radius:18px;border:1px solid var(--border);padding:14px;margin-top:10px;">
+            <div class="small muted">Tu solicitud</div>
+            <div id="wizSummary" style="font-weight:900;margin-top:6px;">—</div>
+          </div>
+          <div class="actions">
+            <button class="btn ghost" onclick="wizBack()">Atrás</button>
+            <button class="btn primary" onclick="wizConfirm()">Confirmar</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="view-acompañado-list" style="display:none;">
+        <h2 class="h2">Mis solicitudes</h2>
+        <div class="list" id="myRequests"></div>
+      </section>
+
+      <!-- ACOMPAÑANTE -->
+      <section class="card" id="view-acompañante" style="display:none;">
+        <h2 class="h2">Solicitudes en tu barrio</h2>
+        <p class="p muted small">Acepta una solicitud si estás disponible.</p>
+        <div class="list" id="availableRequests"></div>
+
+        <div style="height:12px;"></div>
+
+        <h2 class="h2">Mis acompañamientos</h2>
+        <div class="list" id="myAssignmentsActive"></div>
+      </section>
+
+      <!-- ADMIN -->
+      <section class="card" id="view-admin" style="display:none;">
+        <h2 class="h2">Verificación de acompañantes</h2>
+        <p class="p muted small">Solo verificados pueden aceptar solicitudes.</p>
+        <div class="list" id="adminUsers"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Onboarding modal -->
+  <div class="modalOverlay" id="onboardOverlay" aria-hidden="true">
+    <div class="modal">
+      <div class="modalTop">
+        <div style="font-weight:900;">Cómo funciona MONE</div>
+        <button class="btn link" onclick="moneCloseOnboarding()">Cerrar</button>
+      </div>
+
+      <div class="dots" id="onDots">
+        <div class="dot on"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+
+      <div class="slide on" id="slide1">
+        <h3>1) Pide ayuda en 3 pasos</h3>
+        <p>Elige el tipo, el día y la hora. Confirmas y listo.</p>
+      </div>
+
+      <div class="slide" id="slide2">
+        <h3>2) Un acompañante lo acepta</h3>
+        <p>Si hay voluntarios verificados en tu barrio, uno aceptará tu solicitud.</p>
+      </div>
+
+      <div class="slide" id="slide3">
+        <h3>3) Finalizar y valorar</h3>
+        <p>El acompañante marca finalizado, tú lo confirmas y ambos valoráis con estrellas.</p>
+      </div>
+
+      <div class="actions" style="justify-content:space-between;">
+        <button class="btn ghost" onclick="moneOnPrev()">Atrás</button>
+        <button class="btn primary" id="onNextBtn" onclick="moneOnNext()">Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    window.addEventListener("load", () => {
+      moneBootDashboard();
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
+      }
+    });
+  </script>
+</body>
+</html>
